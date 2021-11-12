@@ -1,0 +1,106 @@
+<?php
+
+    session_start();
+    require dirname(__DIR__,2)."/vendor/autoload.php";
+    use Src\{Articulos,Categorias};
+
+$categorias = (new Categorias)->devolverCategorias();
+    function hayError($n,$p){
+        $error=false;
+        if(strlen($n)==0){
+            $_SESSION['error_nombre']="Rellene el campo nombre!!!";
+            $error=true;
+        }
+        if(strlen($p)==0){
+            $_SESSION['error_precio']="Rellene el campo precio!!!";
+            $error=true;
+        }
+        
+        return $error;
+    }
+    if(isset($_POST['btncrear'])){
+        //Procesamos el formulario
+        $nombre=trim(ucwords($_POST['nombre']));
+        $precio=trim($_POST['precio']);
+        $categoria_id=$_POST['categoria_id'];
+        
+        if(!hayError($nombre,$precio)){
+            (new Articulos)->setNombre($nombre)
+            ->setPrecio($precio)
+            ->setCategoria_id($categoria_id)
+            ->create();
+            $_SESSION['mensaje']="Articulo creado correctamente";
+            header("Location:index.php");
+            die();
+
+        }
+        header("Location:{$_SERVER['PHP_SELF']}");
+    }else{
+
+    
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Crear Articulo</title>
+</head>
+
+<body style="background-color: coral">
+    <h3 class="text-center">Nuevo Articulo</h3>
+    <div class="container mt-2">
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" name="categoria" method="POST">
+            <div class="bg-secondary p-4 text-white rounded shadow-lg m-auto" style="width: 40rem;">
+                <div class="form-group">
+                    <label for="n">Nombre Articulo</label>
+                    <input type="text" class="form-control" id="n" placeholder="Nombre" name="nombre">
+                    <?php
+                    if(isset($_SESSION['error_nombre'])){
+                        echo <<<TEXTO
+                        <div class="mt-2 text-danger fw-bold" style="font-size:small">
+                        {$_SESSION['error_nombre']}</div>
+                        TEXTO;
+                        unset($_SESSION['error_nombre']);
+                    }
+                    ?>
+                </div>
+                <div class="form-group">
+                    <label for="a">Precio:</label>
+                    <input type="text" class="form-control" id="a" placeholder="0.0" name="precio" >
+                    <?php
+                    if(isset($_SESSION['error_precio'])){
+                        echo <<<TEXTO
+                        <div class="mt-2 text-danger fw-bold" style="font-size:small">
+                        {$_SESSION['error_precio']}</div>
+                        TEXTO;
+                        unset($_SESSION['error_precio']);
+                    }
+                    ?>
+                </div>
+                <div class="mb-3">
+                    <label for="a" class="form-label">Categoria</label>
+                    <select class="form-select" name="categoria_id" id="a">
+                        <?php
+                        foreach ($categorias as $item) {
+                            echo "\n<option value='{$item->id}'>{$item->nombre}</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+            <button type="submit" name="btncrear" class="btn btn-success mt-3"><i class="fas fa-plus mr-1"></i>Crear</button>
+            <button type="reset" class="btn btn-warning mt-3"><i class="fas fa-broom mr-1"></i>Limpiar</button>
+            <a href="index.php" class="btn btn-primary mt-3"><i class="fas fa-backward mr-1"></i>Volver</a>
+            </div>
+            
+        </form>
+    </div>
+</body>
+
+</html>
+<?php }  ?> 

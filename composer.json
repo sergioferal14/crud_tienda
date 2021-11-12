@@ -1,0 +1,20 @@
+{
+    "name": "sergi/practica",
+    "description": "Proyecto CRUD Tienda",
+    "type": "project",
+    "license": "GPL",
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "sergio",
+            "email": "sergioferal@hotmail.es"
+        }
+    ],
+    "require": {
+        "fakerphp/faker": "^1.16"
+    }
+}
